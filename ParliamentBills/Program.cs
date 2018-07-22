@@ -24,11 +24,12 @@ namespace ParliamentBillsCrawler
 
             foreach (var bill in currentBills)
             {
+                var currentHouse = CurrentBillsBeforeParliamentPage.GetCurrentHouse(bill);
                 var billName = CurrentBillsBeforeParliamentPage.GetBillName(bill);
                 var billUrl = CurrentBillsBeforeParliamentPage.GetBillUrl(bill);
                 var billLastUpdated = CurrentBillsBeforeParliamentPage.GetBillLastUpdatedDate(bill);
 
-                Console.WriteLine(billName + " | " + billUrl + " | " + billLastUpdated.ToString(CultureInfo.CurrentCulture));
+                Console.WriteLine(billName + " | " + currentHouse + " | " + billUrl + " | " + billLastUpdated.ToString(CultureInfo.CurrentCulture));
             }
 
             Console.WriteLine("Press return to exit");

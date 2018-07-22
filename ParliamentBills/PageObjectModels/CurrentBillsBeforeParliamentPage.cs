@@ -60,5 +60,15 @@ namespace ParliamentBillsCrawler.PageObjectModels
 
             return date;
         }
+
+        public string GetCurrentHouse(IWebElement billElement)
+        {
+            var children = billElement.FindElements(By.XPath(".//td"));
+            var anchor = children[0].FindElement(By.XPath(".//img"));
+
+            var alt = anchor.GetAttribute("alt");
+
+            return alt;
+        }
     }
 }

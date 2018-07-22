@@ -2,7 +2,6 @@
 {
     public interface IParliamentWebPages
     {
-        void NavigateToPage();
         string WebPage { get; set; }
     }
 }
