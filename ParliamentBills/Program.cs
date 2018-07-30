@@ -11,27 +11,31 @@ namespace ParliamentBillsCrawler
 {
     class BillsCrawler
     {
-        public static CurrentBillsBeforeParliamentPage CurrentBillsBeforeParliamentPage { get; set; }
+        private static CurrentBillsBeforeParliamentPage CurrentBillsBeforeParliamentPageObjectModel { get; set; }
+
+        private static BillDetailsPage BillDetailsPageObjectModel { get; set; }
 
         static void Main(string[] args)
         {
+            var forceUpdate = true;
             var parliamentBillsContext = new ParliamentBillsContext();
             var driver = new ChromeDriver();
             driver.Manage().Window.Maximize();
 
-            CurrentBillsBeforeParliamentPage = new CurrentBillsBeforeParliamentPage(driver);
-            CurrentBillsBeforeParliamentPage.NavigateToPage();
+            CurrentBillsBeforeParliamentPageObjectModel = new CurrentBillsBeforeParliamentPage(driver);
+            BillDetailsPageObjectModel = new BillDetailsPage(driver);
+            CurrentBillsBeforeParliamentPageObjectModel.NavigateToPage();
 
-            var currentBills = CurrentBillsBeforeParliamentPage.GetBills();
+            var currentBills = CurrentBillsBeforeParliamentPageObjectModel.GetBills();
 
             var billInfo = new List<Bill>();
 
             foreach (var bill in currentBills)
             {
-                var currentHouse = CurrentBillsBeforeParliamentPage.GetCurrentHouse(bill);
-                var billName = CurrentBillsBeforeParliamentPage.GetBillName(bill);
-                var billUrl = CurrentBillsBeforeParliamentPage.GetBillUrl(bill);
-                var billLastUpdated = CurrentBillsBeforeParliamentPage.GetBillLastUpdatedDate(bill);
+                var currentHouse = CurrentBillsBeforeParliamentPageObjectModel.GetCurrentHouse(bill);
+                var billName = CurrentBillsBeforeParliamentPageObjectModel.GetBillName(bill);
+                var billUrl = CurrentBillsBeforeParliamentPageObjectModel.GetBillUrl(bill);
+                var billLastUpdated = CurrentBillsBeforeParliamentPageObjectModel.GetBillLastUpdatedDate(bill);
 
                 var temp = new Bill()
                 {
@@ -49,9 +53,16 @@ namespace ParliamentBillsCrawler
             foreach (var bill in billInfo)
             {
                 var matchedBill = existingBills.FirstOrDefault(x => x.Title == bill.Title);
-                if ((matchedBill != null && bill.LastUpdated > matchedBill.LastUpdated) || matchedBill == null)
+
+                var billRequiresUpdating = (matchedBill != null && bill.LastUpdated > matchedBill.LastUpdated) || matchedBill == null;
+
+                if (billRequiresUpdating || forceUpdate)
                 {
                     if (matchedBill != null) bill.Id = matchedBill.Id;
+
+                    BillDetailsPageObjectModel.NavigateToPage(bill.Uri);
+
+                    bill.OriginatedHouse = BillDetailsPageObjectModel.GetBillOriginatedHouse();
 
                     //Go get the other details from the bill details page
                     updatedBills.Add(bill);
