@@ -47,6 +47,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Migrations\201807302004198_DatabaseCreation.cs" />
+    <Compile Include="Migrations\201807302004198_DatabaseCreation.Designer.cs">
+      <DependentUpon>201807302004198_DatabaseCreation.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Bill.cs" />
     <Compile Include="Models\BillStageDetail.cs" />
     <Compile Include="Models\BillStage.cs" />
@@ -58,6 +63,11 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\201807302004198_DatabaseCreation.resx">
+      <DependentUpon>201807302004198_DatabaseCreation.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

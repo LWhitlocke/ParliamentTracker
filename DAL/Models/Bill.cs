@@ -7,6 +7,7 @@ namespace DAL.Models
         public long Id { get; set; }
         public string Title { get; set; }
         public string CurrentHouse { get; set; }
+        public string OriginatedHouse { get; set; }
         public DateTime LastUpdated { get; set; }
         public string Uri { get; set; }
     }
