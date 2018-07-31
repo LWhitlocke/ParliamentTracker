@@ -51,6 +51,14 @@
     <Compile Include="Migrations\201807302004198_DatabaseCreation.Designer.cs">
       <DependentUpon>201807302004198_DatabaseCreation.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201807311914102_DatabaseStructyreUpdateIncludingRelationships.cs" />
+    <Compile Include="Migrations\201807311914102_DatabaseStructyreUpdateIncludingRelationships.Designer.cs">
+      <DependentUpon>201807311914102_DatabaseStructyreUpdateIncludingRelationships.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201807312038595_MinorDatabaseAlterations.cs" />
+    <Compile Include="Migrations\201807312038595_MinorDatabaseAlterations.Designer.cs">
+      <DependentUpon>201807312038595_MinorDatabaseAlterations.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Bill.cs" />
     <Compile Include="Models\BillStageDetail.cs" />
@@ -67,6 +75,12 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201807302004198_DatabaseCreation.resx">
       <DependentUpon>201807302004198_DatabaseCreation.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201807311914102_DatabaseStructyreUpdateIncludingRelationships.resx">
+      <DependentUpon>201807311914102_DatabaseStructyreUpdateIncludingRelationships.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201807312038595_MinorDatabaseAlterations.resx">
+      <DependentUpon>201807312038595_MinorDatabaseAlterations.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

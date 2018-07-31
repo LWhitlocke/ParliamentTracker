@@ -73,6 +73,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Common\ParliamentBillsCommon.csproj">
+      <Project>{b47198ab-933b-4177-b68c-6d3e343e4a20}</Project>
+      <Name>ParliamentBillsCommon</Name>
+    </ProjectReference>
     <ProjectReference Include="..\DAL\DAL.csproj">
       <Project>{3694fcc5-a652-4f66-afd4-79eafd3b8680}</Project>
       <Name>DAL</Name>

@@ -20,14 +20,15 @@ namespace ParliamentBillsCrawler
             var forceUpdate = true;
             var parliamentBillsContext = new ParliamentBillsContext();
             var driver = new ChromeDriver();
-            driver.Manage().Window.Maximize();
+            driver.Manage().Window.Minimize();
+
+            var crawlDetail = parliamentBillsContext.CrawlDetails.Add(new CrawlDetail() {Started = DateTime.UtcNow});
+            parliamentBillsContext.SaveChanges();
 
             CurrentBillsBeforeParliamentPageObjectModel = new CurrentBillsBeforeParliamentPage(driver);
-            BillDetailsPageObjectModel = new BillDetailsPage(driver);
             CurrentBillsBeforeParliamentPageObjectModel.NavigateToPage();
 
             var currentBills = CurrentBillsBeforeParliamentPageObjectModel.GetBills();
-
             var billInfo = new List<Bill>();
 
             foreach (var bill in currentBills)
@@ -47,39 +48,73 @@ namespace ParliamentBillsCrawler
                 billInfo.Add(temp);
             }
 
+            BillDetailsPageObjectModel = new BillDetailsPage(driver);
             var existingBills = parliamentBillsContext.Bills.ToList();
-            var updatedBills = new List<Bill>();
+
+            crawlDetail.CrawlBillDetails = new List<CrawlBillDetail>();
 
             foreach (var bill in billInfo)
             {
                 var matchedBill = existingBills.FirstOrDefault(x => x.Title == bill.Title);
-
                 var billRequiresUpdating = (matchedBill != null && bill.LastUpdated > matchedBill.LastUpdated) || matchedBill == null;
 
                 if (billRequiresUpdating || forceUpdate)
                 {
-                    if (matchedBill != null) bill.Id = matchedBill.Id;
+                    var temp = new CrawlBillDetail()
+                    {
+                        Started = DateTime.UtcNow,
+                        CrawlDetailsId = crawlDetail.Id
+                    };
 
-                    BillDetailsPageObjectModel.NavigateToPage(bill.Uri);
+                    try
+                    {
+                        BillDetailsPageObjectModel.NavigateToPage(bill.Uri);
 
-                    bill.OriginatedHouse = BillDetailsPageObjectModel.GetBillOriginatedHouse();
+                        bill.OriginatedHouse = BillDetailsPageObjectModel.GetBillOriginatedHouse();
 
-                    //Go get the other details from the bill details page
-                    updatedBills.Add(bill);
+                        try
+                        {
+                            var billStageId = BillDetailsPageObjectModel.GetBillStageId();
+
+                            if (bill.BillStageDetails == null) bill.BillStageDetails = new List<BillStageDetail>();
+                            bill.BillStageDetails.Add(new BillStageDetail()
+                            {
+                                BillStageId = billStageId
+                            });
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine(ex.Message);
+                        }
+
+                        if (matchedBill != null)
+                        {
+                            bill.Id = matchedBill.Id;
+                            temp.BillId = matchedBill.Id;
+                        }
+                        else
+                        {
+                            temp.Bill = bill;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        temp.ExceptionDetails = ex.ToString();
+                    }
+
+                    crawlDetail.CrawlBillDetails.Add(temp);
                 }
             }
 
-            foreach (var updatedBill in updatedBills)
-            {
-                parliamentBillsContext.Bills.AddOrUpdate(updatedBill);
-            }
+            crawlDetail.Completed = DateTime.UtcNow;
+            parliamentBillsContext.CrawlDetails.AddOrUpdate(crawlDetail);
 
             parliamentBillsContext.SaveChanges();
             parliamentBillsContext.Dispose();
             driver.Close();
             driver.Quit();
 
-            Console.WriteLine(updatedBills.Count + " new/updated records");
+            Console.WriteLine(crawlDetail.CrawlBillDetails.Count + " new/updated records");
             Console.ReadLine();
         }
     }

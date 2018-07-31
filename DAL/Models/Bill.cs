@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace DAL.Models
 {
@@ -10,5 +11,8 @@ namespace DAL.Models
         public string OriginatedHouse { get; set; }
         public DateTime LastUpdated { get; set; }
         public string Uri { get; set; }
+
+        public ICollection<BillStageDetail> BillStageDetails { get; set; }
+        public ICollection<CrawlBillDetail> CrawlBillDetails { get; set; }
     }
 }
